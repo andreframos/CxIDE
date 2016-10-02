@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><?eclipse version="3.4"?><plugin>
+
+   <extension point="org.eclipse.ui.commands">
+   <command
+         categoryId="org.eclipse.cxide.commands.category"
+         description="Add some menus dynamically to the interface"
+         id="org.eclipse.cxide.createMenuCommand"
+         name="createMenuCommand">
+   </command>
+   <command
+         defaultHandler="ConslutHandler"
+         description="Consults the current editor file"
+         id="org.eclipse.cxide.consultCommand"
+         name="Consult">
+   </command>
+   <command
+         id="org.eclipse.cxide.consultAllCommand"
+         name="Consult All CxFiles">
+   </command>
+   <command
+         id="org.eclipse.cxide.convert"
+         name="Convert to CxProject">
+   </command>
+   <command
+         defaultHandler="org.eclipse.cxide.handlers.InjectCode_Handler"
+         description="Injects the selected code in the current CxConsole"
+         id="org.eclipse.cxide.InjectCode"
+         name="InjectCxCode">
+   </command></extension>
+   <extension point="org.eclipse.ui.handlers">
+   <handler
+         class="org.eclipse.cxide.handlers.Create_Menu_Handler"
+         commandId="org.eclipse.cxide.createMenuCommand">
+   </handler>
+   <handler
+         class="ConslutHandler"
+         commandId="org.eclipse.cxide.consultCommand">
+   </handler>
+   <handler
+         class="ConsultAllHandler"
+         commandId="org.eclipse.cxide.consultAllCommand">
+   </handler>
+   <handler
+         class="org.eclipse.cxide.handlers.ConvertHandler"
+         commandId="org.eclipse.cxide.convert">
+   </handler>
+   <handler
+         class="org.eclipse.cxide.handlers.InjectCode_Handler"
+         commandId="org.eclipse.cxide.InjectCode">
+   </handler></extension>
+   <extension point="org.eclipse.ui.menus">
+      
+      
+      
+      
+      
+      
+      
+      
+      
+   <menuContribution
+         allPopups="false"
+         locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
+      <toolbar
+            id="org.eclipse.cxide.toolbars.sampleToolbar">
+         <command
+               commandId="org.eclipse.cxide.createMenuCommand"
+               icon="icons/create.png"
+               style="push"
+               tooltip="Adds some menu to the interface">
+            <visibleWhen
+                  checkEnabled="true">
+               <with
+                     variable="activeWorkbenchWindow.activePerspective">
+                  <reference
+                        definitionId="onValidationPerspective">
+                  </reference>
+               </with>
+            </visibleWhen>
+         </command>
+      </toolbar>
+   </menuContribution>
+   <menuContribution
+         allPopups="false"
+         locationURI="popup:CxEditor?after=additions">
+      <command
+            commandId="org.eclipse.cxide.createMenuCommand"
+            label="Create Command"
+            style="push">
+      </command>
+      <dynamic
+            class="org.eclipse.cxide.Menu_ops.EditorContextMenu"
+            id="org.eclipse.cxide.dynamic2">
+      </dynamic>
+   </menuContribution>
+   <menuContribution
+         allPopups="false"
+         locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
+      <toolbar
+            id="org.eclipse.cxide.toolbars.sampleToolbar">
+         <command
+               commandId="org.eclipse.cxide.consultCommand"
+               icon="icons/cx.gif"
+               label="Consult CxEditor File"
+               style="push">
+         </command>
+      </toolbar>
+   </menuContribution>
+   <menuContribution
+         allPopups="false"
+         locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
+      <toolbar
+            id="org.eclipse.cxide.toolbars.sampleToolbar">
+         <command
+               commandId="org.eclipse.cxide.consultAllCommand"
+               icon="icons/cx.gif"
+               label="Consult all CxFiles"
+               style="push">
+         </command>
+      </toolbar>
+   </menuContribution>
+   <menuContribution
+         allPopups="false"
+         locationURI="popup:org.eclipse.ui.projectConfigure">
+      <command
+            commandId="org.eclipse.cxide.convert"
+            label="Convet to CxProject"
+            style="push">
+         <visibleWhen>
+      <with variable="selection">
+        <iterate operator="and" ifEmpty="false">
+           <not>
+              <test
+                    property="org.eclipse.core.resources.projectNature"
+                    value="org.eclipse.cxide.CxNatureId">
+              </test>
+           </not>
+        </iterate>
+     </with>
+    </visibleWhen>
+      </command>
+   </menuContribution></extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="org.eclipse.cxide.perspectives.PerspectiveFactory1"
+            icon="icons/cx.gif"
+            id="org.eclipse.cxide.perspective"
+            name="CxProlog Perspective">
+      </perspective>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipse.cxide.perspective">
+         <view
+               id="org.eclipse.ui.console.ConsoleView"
+               minimized="false"
+               relationship="bottom"
+               relative="org.eclipse.ui.editorss"
+               visible="true">
+         </view>
+         <view
+               id="org.eclipse.jdt.ui.PackageExplorer"
+               minimized="false"
+               relationship="left"
+               relative="org.eclipse.ui.editorss"
+               visible="true">
+         </view>
+         <view
+               id="org.eclipse.cxide.EditorView"
+               minimized="false"
+               ratio="0.80"
+               relationship="right"
+               relative="org.eclipse.ui.editorss">
+         </view>
+         <view
+               id="org.eclipse.cxide.view1"
+               minimized="false"
+               relationship="right"
+               relative="org.eclipse.ui.editorss">
+         </view>
+      </perspectiveExtension>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="org.eclipse.cxide.editors.XMLEditor"
+            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+            extensions="xml"
+            icon="icons/sample.gif"
+            id="org.eclipse.cxide.editors.XMLEditor"
+            name="Sample XML Editor">
+      </editor>
+      <editor
+            class="org.eclipse.cxide.CxEditor.CxEditor"
+            contributorClass="org.eclipse.ui.editors.text.TextEditorActionContributor"
+            default="false"
+            extensions="pl"
+            icon="icons/cx.gif"
+            id="org.eclipse.cxide.CxEditor1"
+            name="Super_CxEditor">
+      </editor>
+   </extension>
+   <extension
+         point="org.eclipse.core.expressions.definitions">
+      <definition
+            id="onValidationPerspective">
+         <with
+               variable="activeWorkbenchWindow.activePerspective">
+            <equals
+                  value="org.eclipse.cxide.perspective">
+            </equals>
+         </with>
+      </definition>
+   </extension>
+   <extension
+         id="CxMarkers"
+         name="CxProlog Markers"
+         point="org.eclipse.core.resources.markers">
+      <persistent
+            value="true">
+      </persistent>
+   </extension>
+   
+   
+   <extension
+         point="org.eclipse.ui.editors.annotationTypes">
+      <type
+            markerType="org.eclipse.cxide.CxMarkers"
+            name="org.eclipse.cxide.CxPrologAnnotationType">
+      </type>
+   </extension>
+  <extension point="org.eclipse.ui.editors.markerAnnotationSpecification">
+	<specification
+       annotationType="org.eclipse.cxide.CxPrologAnnotationType"
+       colorPreferenceKey="highlight.color"
+       colorPreferenceValue="0,253,0"
+       highlightPreferenceKey="highlight.background"
+       highlightPreferenceValue="false"
+       includeOnPreferencePage="true"
+       label="CxProlog Annotations"
+       overviewRulerPreferenceKey="highlight.rulers.overview"
+       overviewRulerPreferenceValue="false"
+       presentationLayer="4"
+       symbolicIcon="error"
+       textPreferenceKey="highlight.text"
+       textPreferenceValue="false"
+       textStylePreferenceKey="highlight.text.style"
+       textStylePreferenceValue="NONE"
+       verticalRulerPreferenceKey="highlight.rulers.vertical"
+       verticalRulerPreferenceValue="false"/>
+	</extension>
+  <extension
+        point="org.eclipse.ui.ide.markerResolution">
+     <markerResolutionGenerator
+           class="thingsToSEE.MarkerResolutionGenerator1"
+           markerType="org.eclipse.core.resources.problemmarker">
+     </markerResolutionGenerator>
+  </extension>
+  <extension
+        point="org.eclipse.ui.preferencePages">
+     <page
+           class="org.eclipse.cxide.preferences.CxPrologPreferences"
+           id="org.eclipse.cxide.page1"
+           name="CxProlog">
+     </page>
+     <page
+           category="org.eclipse.cxide.page1"
+           class="org.eclipse.cxide.preferences.EditorPreferences"
+           id="org.eclipse.cxide.page2"
+           name="CxEditor">
+     </page>
+  </extension>
+  <extension
+        point="org.eclipse.core.runtime.preferences">
+     <initializer
+           class="org.eclipse.cxide.preferences.PreferenceInitializer">
+     </initializer>
+  </extension>
+  <extension
+        point="org.eclipse.ui.views">
+     <view
+           class="org.eclipse.cxide.views.OutlineView"
+           icon="icons/cx.gif"
+           id="org.eclipse.cxide.view1"
+           name="CxProlog Outline View"
+           restorable="true">
+     </view>
+  </extension>
+  <extension
+        point="org.eclipse.ui.console.consolePageParticipants">
+     <consolePageParticipant
+           class="org.eclipse.cxide.console.ConsoleButtonsContribution"
+           id="org.eclipse.cxide.consolePageParticipant1">
+        <enablement>
+           <instanceof
+                 value="org.eclipse.cxide.console.CxNormalConsole">
+           </instanceof>
+        </enablement>
+     </consolePageParticipant>
+  </extension>
+  <extension
+        id="org.eclipse.cxide.CxNatureId"
+        name="CxProject"
+        point="org.eclipse.core.resources.natures">
+     <runtime>
+        <run
+              class="org.eclipse.cxide.nature.CxProject">
+        </run>
+     </runtime>
+  </extension>
+  <extension
+        point="org.eclipse.ui.ide.projectNatureImages">
+     <image
+           icon="icons/cx.gif"
+           id="org.eclipse.cxide.CxProjectImage"
+           natureId="org.eclipse.cxide.CxNatureId">
+     </image>
+  </extension>
+  <extension
+        point="org.eclipse.ui.bindings">
+     <key
+           commandId="org.eclipse.cxide.InjectCode"
+           schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+           sequence="M1+F2">
+     </key>
+  </extension>
+  <extension
+        point="org.eclipse.ui.newWizards">
+     <category
+           id="org.eclipse.cxide.category1"
+           name="CxProlog Wizards">
+     </category>
+     <wizard
+           category="org.eclipse.cxide.wizard1"
+           class="org.eclipse.cxide.CustomProjectNewWizard"
+           icon="icons/cx.gif"
+           id="org.eclipse.cxide.wizard1"
+           name="CxProlog Project">
+     </wizard>
+  </extension>
+
+
+
+
+</plugin>
