@@ -56,7 +56,7 @@ public class Activator extends AbstractUIPlugin {
 	      
 		  //Lançar as duas consolas do IDE
 		  consoleDynamic = new CxDynamicConsole();
-		 // consoleNormal = new CxNormalConsole();
+		  consoleNormal = new CxNormalConsole();
 	    
 	}
 

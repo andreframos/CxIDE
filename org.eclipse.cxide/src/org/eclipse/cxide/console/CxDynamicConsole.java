@@ -161,11 +161,7 @@ public class CxDynamicConsole extends IOConsole{
 		Prolog.CallProlog("cxThread :- '$top_level2'.");
 		Prolog.CallProlog("thread_new(cxThread,cxThread,fail).");
 		
-		//Pedir a versão, para que a consola do IDE tenha um Inicio semelhante
-				//ao que seria esperado no terminal
-		System.out.println("A PEDIR A VERSÃO");
-				Prolog.coroutiningInput("cxThread", "version.\n");
-				Prolog.coroutiningRunABit("cxThread");
+		
 		
 				//String output = Prolog.coroutiningOutputText("cxThread");
 	
@@ -180,17 +176,18 @@ public class CxDynamicConsole extends IOConsole{
 		
 		//Ler algum lixo inicial
 		Prolog.coroutiningRunABit("cxThread");
-		//Prolog.coroutiningOutputText("cxThread");
 		
-		
-		
-		/*try {
-			writeToConsole.write(output);
+		// a resposta do fs_cwd
+		String output = Prolog.coroutiningOutputText("cxThread");
+	
+		try {
+			
+			//escrever para a consola
+			writeToConsole.write("[main] ?- ");
 			writeToConsole.flush();
 		} catch (IOException e) {
-			System.err.println("Erro na CxDynamic Console");
 			e.printStackTrace();
-		}*/
+		}
 	
 		//Lançar Thread que será responsável por ler o input do user
 		//e enviar o mesmo para a Consola

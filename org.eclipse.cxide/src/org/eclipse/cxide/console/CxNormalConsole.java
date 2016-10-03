@@ -84,6 +84,7 @@ public class CxNormalConsole extends IOConsole {
 		BufferedWriter w;
 		String command;
 		BufferedReader b;
+		PrintWriter outConsole;
 		private volatile boolean running = true;
 		
 		 public void terminate() {
@@ -91,15 +92,18 @@ public class CxNormalConsole extends IOConsole {
 		        System.out.println(running);
 		    }
 		
-		ReadUserWriteCx(OutputStream cxOutputStream, InputStream inputConsole ) {
+		ReadUserWriteCx(OutputStream cxOutputStream, InputStream inputConsole, PrintWriter outConsole ) {
 			this.w =  new BufferedWriter(new OutputStreamWriter(cxOutputStream));
 			this.b=   new BufferedReader(new InputStreamReader(inputConsole));
 			command = "";
+			this.outConsole=outConsole;
 		}
-
+	
 		public void run() {
 			try {
 				while(running && Thread.interrupted()!= true){
+					outConsole.write("\n[main] ?- ");
+					outConsole.flush();
 					if((command = b.readLine()) != null) {
 	                     
 						command += "\n";
@@ -235,11 +239,12 @@ public class CxNormalConsole extends IOConsole {
 			String runtimePath = ResourcesPlugin.getWorkspace().getRoot().getLocation().toString();
 			
 			//Criar o processo CxProlog apartir da instalação local definida nas Prederências
-			String ok = Activator.getDefault().getPreferenceStore().getDefaultString(PreferenceConstants.CX_PATH)+"\n";
-			w.write(ok);
+			String local_instalation = Activator.getDefault().getPreferenceStore().getDefaultString(PreferenceConstants.CX_PATH)+"\n";
+			System.out.println("OK: "+local_instalation);
+			w.write(local_instalation);
 			w.flush();
 			Thread.sleep(10);
-			
+			System.out.println("okoko");
 			//Imprimir a versão do CxProlog para que a consola tenha um inicio igual
 			// á normal execução do CxProlog num terminal
 			String version = b.readLine();
@@ -254,12 +259,10 @@ public class CxNormalConsole extends IOConsole {
 			Thread.sleep(10);
 			//Ler algum lixo como por exemplo o output da mudança de directoria
 			System.out.println("READ LINEBREAK:"+ b.readLine());
-			System.out.println("READ PROMPT AND YES:"+ b.readLine());
-			System.out.println("READ LINEBREAK:"+b.readLine());
+			//System.out.println("READ PROMPT AND YES:"+ b.readLine());
+			//System.out.println("READ LINEBREAK:"+b.readLine());
 			
-			//Impressão do prompt para mimicar a execução em terminal
-			outConsole.print("\n[main] ?- ");
-			outConsole.flush();
+			
 			
 			//Lançar Thread para ler do CxProlog e escrever para a consola
 			readCx = new ReadCxWriteConsole(is,outConsoleStream);
@@ -267,7 +270,7 @@ public class CxNormalConsole extends IOConsole {
 			readCx_thread.start();
 		
 			//Lançar Thread para ler input do user enviá-lo para o CxProlog
-		    readConsoleWriteCx = new ReadUserWriteCx(os,inConsoleStream);
+		    readConsoleWriteCx = new ReadUserWriteCx(os,inConsoleStream,outConsole);
 			readConsoleWriteCx_thread = new Thread(readConsoleWriteCx);
 			readConsoleWriteCx_thread.start();
 		
