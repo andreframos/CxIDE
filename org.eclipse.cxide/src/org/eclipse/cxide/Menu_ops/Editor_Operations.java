@@ -10,6 +10,7 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.cxide.Activator;
@@ -29,12 +30,14 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.console.ConsolePlugin;
+import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.internal.Workbench;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
@@ -214,18 +217,9 @@ public class Editor_Operations {
 	    }
 	
 	
-	public static void addProblemMarker(int charStart, int offset, String msg){
-		IWorkbench wb = PlatformUI.getWorkbench();
-		IWorkbenchWindow window = wb.getActiveWorkbenchWindow();
-		IWorkbenchPage page = window.getActivePage();
-		IEditorPart editor = page.getActiveEditor();
-		IEditorInput input = editor.getEditorInput();
-		IPath path = ((FileEditorInput)input).getPath();
-		String workspace=	ResourcesPlugin.getWorkspace().getRoot().getLocation().toString();
-		IPath relativePath=path.makeRelativeTo(new Path(workspace));
-		String relPath=relativePath.toString();
-		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(relativePath);
-		IResource r = file;
+	public static void addProblemMarker(IResource r, int charStart, int offset, String msg){
+		System.out.println("Adding problemMarker");
+		//String relPath = getEditorFilePath();
 		
 		try {
 			 IMarker problemMarker = r.createMarker(IMarker.PROBLEM);
@@ -250,7 +244,7 @@ public class Editor_Operations {
 			        problemMarker.setAttribute(IMarker.CHAR_END, offset);
 			       // cxMarker.setAttribute(IMarker.CHAR_END, offset);
 			        
-		            problemMarker.setAttribute(IMarker.LOCATION, relPath);
+		           // problemMarker.setAttribute(IMarker.LOCATION, relPath);
 		            //cxMarker.setAttribute(IMarker.LOCATION, relPath);
 		            
 		            problemMarker.setAttribute(IMarker.PRIORITY, IMarker.PRIORITY_HIGH);
@@ -269,20 +263,84 @@ public class Editor_Operations {
 		//return relativePath;
 	}
 	
-	public static void delProblemMarkers(){
-		IWorkbench wb = PlatformUI.getWorkbench();
-		IWorkbenchWindow window = wb.getActiveWorkbenchWindow();
-		IWorkbenchPage page = window.getActivePage();
-		IEditorPart editor = page.getActiveEditor();
-		IEditorInput input = editor.getEditorInput();
+	private static IResource getEditorFileResource(){
+		System.out.println("Getting File Resource");
+		IResource resource = null;
+			try{
+	
+			IWorkbench iworkbench = PlatformUI.getWorkbench();
+			//if (iworkbench == null)
+				//System.out.println("IN");
+			IWorkbenchWindow iworkbenchwindow = iworkbench.getActiveWorkbenchWindow();
+			//if (iworkbenchwindow == null)
+				//System.out.println("NN");
+			IWorkbenchPage iworkbenchpage = iworkbenchwindow.getActivePage();
+			//if (iworkbenchpage == null) 
+				//System.out.println("pl");
+			IEditorPart ieditorpart = iworkbenchpage.getActiveEditor();
+			if(ieditorpart instanceof CxEditor){
+			
+				if(!(ieditorpart.getEditorInput() instanceof IFileEditorInput)){
+					System.out.println("EXTERNAL FILE DETECTED");
+					((CxEditor) ieditorpart).close(false);
+					IFile f = ((CxEditor) ieditorpart).getFileInput();
+					System.out.println(f.getLocation());
+					resource = (IResource) f.getAdapter(IResource.class);
+					
+				}else{
+				resource = (IResource) ieditorpart.getEditorInput().getAdapter(IResource.class);
+			}
+				}			
 		
-		IResource resource = (IResource) input.getAdapter(IResource.class);
+		}catch(Exception e){
+			System.out.println("A PRoblem ocurred");
+			//System.out.println(resource.exists());
+			System.out.println(e.getMessage());
+		}
+
+		return resource;
+	}
+	
+	private static String getEditorFilePath(){
+		String filePath = "";
+		IResource resource = null;
+			try{
+	
+			IWorkbench iworkbench = PlatformUI.getWorkbench();
+			//if (iworkbench == null)
+				//System.out.println("IN");
+			IWorkbenchWindow iworkbenchwindow = iworkbench.getActiveWorkbenchWindow();
+			//if (iworkbenchwindow == null)
+				//System.out.println("NN");
+			IWorkbenchPage iworkbenchpage = iworkbenchwindow.getActivePage();
+			//if (iworkbenchpage == null) 
+				//System.out.println("pl");
+			IEditorPart ieditorpart = iworkbenchpage.getActiveEditor();
+			if(ieditorpart instanceof CxEditor){
+				IFile f = ((CxEditor) ieditorpart).getFileInput();
+				filePath = f.getLocation().toString();
+			}
+			
+		
+		}catch(Exception e){
+			System.out.println("A PRoblem ocurred");
+			System.out.println(e.getMessage());
+		}
+
+		return filePath;
+	}
+	
+	public static void delProblemMarkers(IResource resource){
+		
+			
+		
+		try {
 		  IMarker[] problems = null;
 		   int depth = IResource.DEPTH_INFINITE;
-		  
-		      try {
-				problems = resource.findMarkers(IMarker.PROBLEM, true, depth);
-			
+		   
+					System.out.println(resource.getName());
+					problems = resource.findMarkers(IMarker.PROBLEM, true, depth);
+				
 				for(int i=0; i<problems.length; i++){
 					System.out.println(problems[i].getAttribute(IMarker.MESSAGE));
 					problems[i].delete();
@@ -309,19 +367,23 @@ public class Editor_Operations {
 	
 			
 	public static void errors_Folding_Outline(Object[] predInfo, Object[] errorInfo){
+		
+		IResource resource = getEditorFileResource();
+		
+		System.out.println("PREDS: "+Arrays.toString(predInfo));
 		System.out.println("ERRORS: "+Arrays.toString(errorInfo));
 		//Estrutura de dados com os predicados no atual ficheiro em edição
 		//para cada predicado são tambem armazenadas as informações sobre
 		// o seu offset de inicio no ficheiro e o range do mesmo.
 		//O filePred é utilizado parao Outline.
-		filePred.clear();
+        filePred.clear();
 		//Esta estrutura de dados tal como o filePred é utilizada para o Outline
 		//No entanto, esta estrutura só é utilizada numa parte mais avançada
 		//do mesmo. O fileOutlineInfo terá as informações de todos os
 		// funtores existentes no ficheiro, a sua aridade, offset inicio e range
 		fileOutlineInfo.clear();
 		//Apagar todos os marcadores de erros do ficheiro atual em edição
-		delProblemMarkers();
+		delProblemMarkers(resource);
 		//Offset de inicio no ficheiro dum predicado
 		int beggining_offset = 0;
 		//linha de inicio dum predicado
@@ -343,7 +405,9 @@ public class Editor_Operations {
 		int i=0;
 		//Percorrer o vetor com as informações dos erros existentes
 		// e adicionar os erros como marcadores de problemas ao editor
+		System.out.println("entering errors cycle");
 		while(i<errorInfo.length){
+			System.out.println("ITERATINF........");
 			beggining_offset=(int) errorInfo[i];
 			line=(int) errorInfo[++i];
 			line_offset=(int) errorInfo[++i];
@@ -351,13 +415,13 @@ public class Editor_Operations {
 			end_line=(int) errorInfo[++i];
 			unknown= (int) errorInfo[++i];
 		    error_info = (String) errorInfo[++i];
-		    addProblemMarker(beggining_offset-1, ending_offset, error_info);
+		    addProblemMarker(resource, beggining_offset-1, ending_offset, error_info);
 			i++;
 		}
 		i=0;
 		//Todo o conteudo do atual ficheiro em edição
 		//É necessário para conseguir obter as informações sobre os predicados
-		String content = getCurrentEditorContent();
+		/*String content = getCurrentEditorContent();
 		
 		//Processar informações sobre todos os predicados do ficheiro
 		//Esta informações permitirão atualizar o folding do editor e a vista estruturada
@@ -392,8 +456,8 @@ public class Editor_Operations {
 		System.out.println("-------------------------------------");
 		}
 		//Atualizar a nova outline view.
-		OutlineView.refresh();
-		
+		OutlineView.refresh();*/
+	
 	}
 	
 	

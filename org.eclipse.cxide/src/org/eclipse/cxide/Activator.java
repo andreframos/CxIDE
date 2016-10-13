@@ -1,6 +1,13 @@
 package org.eclipse.cxide;
 
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.cxide.console.CxDynamicConsole;
 import org.eclipse.cxide.console.CxNormalConsole;
 import org.eclipse.cxide.perspectives.WorkFlowStudioPerspectiveAdapter;
@@ -8,7 +15,11 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+
+import prolog.Prolog;
+import thingsToSEE.FilesBundle;
 
 
 
@@ -30,20 +41,7 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public Activator() {
 		
-		System.out.println("A Iniciar");
 		
-		prolog.Prolog.StartProlog();
-		
-		//Consultar ficheiros iniciais
-		prolog.Prolog.CallProlog("consult('root.pl')");
-	    prolog.Prolog.CallProlog("consult('config.pl')");
-		
-	    
-	    //Adicionar um listener para mudanças de perspectiva que detecta que a perspectiva
-	    //foi mudada e pode fazer algo.
-		IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-		WorkFlowStudioPerspectiveAdapter perspectiveListener = new WorkFlowStudioPerspectiveAdapter();
-        workbenchWindow.addPerspectiveListener(perspectiveListener);
 	}
 
 	/*
@@ -54,6 +52,38 @@ public class Activator extends AbstractUIPlugin {
 		super.start(context);
 		plugin = this;
 	      
+		
+		System.out.println("A Iniciar");
+		System.out.println("Working Directory = " +
+	              System.getProperty("user.dir"));
+		prolog.Prolog.StartProlog();
+		
+		//Bundle bundle = Platform.getBundle("org.eclipse.cxide");
+
+		 String rootFilePath = FilesBundle.getAbsFilePath("root.pl");
+		 String configFilePath = FilesBundle.getAbsFilePath("config.pl");
+		
+		System.out.println("URL: "+rootFilePath);
+		System.out.println("URL2: "+configFilePath);
+		FilesBundle.contentAssistFile=FilesBundle.getAbsFilePath("builts.xml");
+		System.out.println("URL3: "+FilesBundle.getAbsFilePath("builts.xml"));
+		try {
+		
+			Prolog.CallProlog("consult('"+rootFilePath+"')");
+			Prolog.CallProlog("consult('"+configFilePath+"')");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	
+		
+	    
+	    //Adicionar um listener para mudanças de perspectiva que detecta que a perspectiva
+	    //foi mudada e pode fazer algo.
+		IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+		WorkFlowStudioPerspectiveAdapter perspectiveListener = new WorkFlowStudioPerspectiveAdapter();
+        workbenchWindow.addPerspectiveListener(perspectiveListener);
 		  //Lançar as duas consolas do IDE
 		  consoleDynamic = new CxDynamicConsole();
 		  consoleNormal = new CxNormalConsole();

@@ -34,8 +34,9 @@ public class MyReconciler implements IReconcilingStrategy, IReconcilingStrategyE
 		
 	    
 		public void run() {
-	    	
+			Prolog.CallProlog("writeln(olaaaaaa)");
 	    	Prolog.CallProlog("editor_getCodeErrors");
+			
 	    }
 	}
 	
@@ -44,9 +45,9 @@ public class MyReconciler implements IReconcilingStrategy, IReconcilingStrategyE
 	@Override
 	public void reconcile(IRegion partition) {
 		// TODO Auto-generated method stub
-		
+		System.out.println("Reconciling");
 		Activator.getDefault().getWorkbench().getDisplay().asyncExec(new VerifyErrors());
-		System.out.println(i);
+		
 		
 		
 	}

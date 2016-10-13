@@ -9,6 +9,8 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
+import thingsToSEE.FilesBundle;
+
 
 /**
  * The definition of the CxProlog Perspective
@@ -29,8 +31,7 @@ public class PerspectiveFactory1 implements IPerspectiveFactory {
 			IFileStore fileStore = EFS
 					.getLocalFileSystem()
 					.getStore(
-							new Path(
-									System.getProperty("user.dir")+"/config.pl"));
+							new Path(FilesBundle.getAbsFilePath("config.pl")));
 			IDE.openEditorOnFileStore(page, fileStore);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

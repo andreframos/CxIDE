@@ -2,42 +2,52 @@
 
    <extension point="org.eclipse.ui.commands">
    <command
-         categoryId="org.eclipse.cxide.commands.category"
+         categoryId="org.eclipse.cxide.category"
          description="Add some menus dynamically to the interface"
          id="org.eclipse.cxide.createMenuCommand"
          name="createMenuCommand">
    </command>
    <command
-         defaultHandler="ConslutHandler"
+         category="org.eclipse.cxide.category"
+         categoryId="org.eclipse.cxide.category"
          description="Consults the current editor file"
          id="org.eclipse.cxide.consultCommand"
          name="Consult">
    </command>
    <command
+         category="org.eclipse.cxide.category"
+         categoryId="org.eclipse.cxide.category"
          id="org.eclipse.cxide.consultAllCommand"
          name="Consult All CxFiles">
    </command>
    <command
+         category="org.eclipse.cxide.category"
+         categoryId="org.eclipse.cxide.category"
          id="org.eclipse.cxide.convert"
          name="Convert to CxProject">
    </command>
    <command
-         defaultHandler="org.eclipse.cxide.handlers.InjectCode_Handler"
+         category="org.eclipse.cxide.category"
+         categoryId="org.eclipse.cxide.category"
          description="Injects the selected code in the current CxConsole"
          id="org.eclipse.cxide.InjectCode"
          name="InjectCxCode">
-   </command></extension>
+   </command>
+   <category
+         id="org.eclipse.cxide.category"
+         name="CxCommands">
+   </category></extension>
    <extension point="org.eclipse.ui.handlers">
    <handler
          class="org.eclipse.cxide.handlers.Create_Menu_Handler"
          commandId="org.eclipse.cxide.createMenuCommand">
    </handler>
    <handler
-         class="ConslutHandler"
+         class="org.eclipse.cxide.handlers.Create_Menu_Handler"
          commandId="org.eclipse.cxide.consultCommand">
    </handler>
    <handler
-         class="ConsultAllHandler"
+         class="org.eclipse.cxide.handlers.Create_Menu_Handler"
          commandId="org.eclipse.cxide.consultAllCommand">
    </handler>
    <handler
@@ -317,14 +327,6 @@
            id="org.eclipse.cxide.CxProjectImage"
            natureId="org.eclipse.cxide.CxNatureId">
      </image>
-  </extension>
-  <extension
-        point="org.eclipse.ui.bindings">
-     <key
-           commandId="org.eclipse.cxide.InjectCode"
-           schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-           sequence="M1+F2">
-     </key>
   </extension>
   <extension
         point="org.eclipse.ui.newWizards">

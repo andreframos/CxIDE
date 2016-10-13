@@ -12,6 +12,8 @@ import org.eclipse.ui.console.IConsolePageParticipant;
 import org.eclipse.ui.part.IPageBookViewPage;
 import org.eclipse.ui.part.IPageSite;
 
+import thingsToSEE.FilesBundle;
+
 /**
  * This class is used to add contribution to the CxNormalConsole
  * Namely a restart button on the toolbar of the console
@@ -68,7 +70,9 @@ public class ConsoleButtonsContribution implements IConsolePageParticipant {
 	}
 
 	 private void createTerminateAllButton() {
+		    String cxGif_Path = FilesBundle.getAbsFilePath("/icons/cx.gif");
 	        ImageDescriptor imageDescriptor = ImageDescriptor.createFromFile(getClass(), "/icons/cx.gif");
+	        System.out.println("IMAGEEEEEEEEEE: "+cxGif_Path);
 	        this.stop = new Action("Terminate all", imageDescriptor) {
 	            public void run() {
 	                //code to execute when button is pressed
@@ -79,6 +83,7 @@ public class ConsoleButtonsContribution implements IConsolePageParticipant {
 	    }
 
 	    private void createRemoveButton() {
+	    	String cxGif_Path = FilesBundle.getAbsFilePath("/icons/cx.gif");
 	        ImageDescriptor imageDescriptor = ImageDescriptor.createFromFile(getClass(), "/icons/cx.gif");
 	        this.remove= new Action("Remove console", imageDescriptor) {
 	            public void run() {

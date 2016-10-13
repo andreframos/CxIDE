@@ -20,6 +20,8 @@ import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 
+import thingsToSEE.FilesBundle;
+
 /**
  * Classe que implementa o ContentAssist
  * Ou seja completação automática e informação sobre
@@ -38,13 +40,15 @@ public class CxPrologContentAssist implements IContentAssistProcessor {
 	//Necessário pois estava a dar Erro File not Found
 	//Assim temos o absolute path do ficheiro
 	private String getBuiltinsImgPath(){
-		return System.getProperty("user.dir")+"/icons/contentAssist/builtin.png";
+		String builtsGif = FilesBundle.getAbsFilePath("/icons/contentAssist/builtin.png");
+		return builtsGif;
 	}
 	
 	//Necessário pois estava a dar Erro File not Found
 	//Assim temos o absolute path do ficheiro
 	private String getUserDefinedImgPath(){
-		return  System.getProperty("user.dir")+"/icons/contentAssist/userDef.png";
+		String userGif = FilesBundle.getAbsFilePath("/icons/contentAssist/userDef.png");
+		return  userGif;
 	}
 
 	

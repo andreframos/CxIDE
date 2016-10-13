@@ -1,8 +1,17 @@
 
 package org.eclipse.cxide.CxEditor;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IPathEditorInput;
 import org.eclipse.ui.editors.text.TextFileDocumentProvider;
 
 
@@ -15,6 +24,9 @@ public class TextDocumentProvider extends TextFileDocumentProvider {
 		return document;
 	}
 	
+	
+    /////////////////////////////////////////////////////////////////7
+	
 	protected FileInfo createFileInfo(Object element) throws CoreException {
     	FileInfo info = super.createFileInfo(element);
     	if(info==null){
@@ -22,7 +34,8 @@ public class TextDocumentProvider extends TextFileDocumentProvider {
     	}
     	IDocument document = info.fTextFileBuffer.getDocument();
     	if (document != null) {
-
+    			System.out.println("Here");
+    			
     		/* register your partitioner and other things here 
                        same way as in your fisrt document provider */
     	}

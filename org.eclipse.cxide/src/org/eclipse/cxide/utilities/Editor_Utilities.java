@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.cxide.CxEditor.VarRule;
 import org.eclipse.cxide.CxEditor.WhiteSpaceDetector;
 import org.eclipse.cxide.CxEditor.WordDetector;
@@ -24,8 +25,10 @@ import org.eclipse.jface.text.rules.WordRule;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
+import org.osgi.framework.Bundle;
 
 import prolog.Prolog;
+import thingsToSEE.FilesBundle;
 
 public class Editor_Utilities {
 	private static String[] builtins;
@@ -192,7 +195,10 @@ public class Editor_Utilities {
 	}
 	
 	public static String getContentAssistFile(){
-		return contentAssistFilePath;
+		String builtsPath = FilesBundle.getAbsFilePath("builts.xml");
+		System.out.println("URL4: "+builtsPath);
+		return builtsPath;
+		//return contentAssistFilePath;
 	}
 	
 	

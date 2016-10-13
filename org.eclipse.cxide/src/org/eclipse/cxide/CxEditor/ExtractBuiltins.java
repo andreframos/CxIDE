@@ -49,7 +49,7 @@ public class ExtractBuiltins {
 			///src/builts.xml
 			String contentAssistFile = Editor_Utilities.getContentAssistFile();
 			// parse using builder to get DOM representation of the XML file
-			Document dom = db.parse(getChangeDir() + contentAssistFile);
+			Document dom = db.parse(contentAssistFile);
 			return dom;
 
 		} catch (ParserConfigurationException pce) {
