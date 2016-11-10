@@ -6,7 +6,7 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.commands.IHandlerListener;
 import org.eclipse.cxide.Menu_ops.Editor_Operations;
-import org.eclipse.cxide.console.CxDynamicConsole;
+import org.eclipse.cxide.console.CxInternalConsole;
 
 
 public class InjectCode_Handler extends AbstractHandler {

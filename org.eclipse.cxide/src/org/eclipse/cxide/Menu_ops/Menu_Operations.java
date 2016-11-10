@@ -1,16 +1,13 @@
 package org.eclipse.cxide.Menu_ops;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Iterator;
 
-import org.eclipse.cxide.console.CxDynamicConsole;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.StatusLineManager;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.internal.Workbench;
 import org.eclipse.ui.internal.WorkbenchWindow;
@@ -42,18 +39,33 @@ public class Menu_Operations {
 		System.out.println("---------------------------");
 		System.out.println("D-> Menu_Operations:printMenus");
 		int index=0;
-		
+		String info="";
 		if(menusCreated.size()==0)
-			System.out.println("No Menus Created");
+			info= "No Menus Created";
 		else{	
 			Iterator<String> it = menusCreated.keySet().iterator();
-			
+			CxMenu menu;
 			while(it.hasNext()){
-				System.out.println(it.next());
+				menu=menusCreated.get(it.next());
+				info+=menu.getId()+"\n";
+					Iterator<Object> items = menu.getSubMenus();
+						while(items.hasNext()){
+							Object item = items.next();
+							if(item instanceof CxAction){
+								CxAction action = (CxAction) item;
+								info+="\t"+action.getName()+"\n";
+							}else if(item instanceof CxMenu){
+								CxMenu subMenu = (CxMenu) item;
+								info+="\t"+subMenu.getId()+"\n";
+							}
+						}
+					}
 			}
-		}
-		System.out.println("--------------------------");
 		
+		MessageDialog.openInformation(
+				window.getShell(),
+				"List of menus",
+				info);
 	}
 	
 	/**
@@ -75,80 +87,72 @@ public class Menu_Operations {
 	
 	public static void createMenu(String menu_name){
 		System.out.println("D-> Menu_Operations:createMenu");
-		class About1 extends Action {
-	        public About1() {
-	            super("Zero item", AS_PUSH_BUTTON);
-	        }
-	        public void run() {
-	        	
-	        	Prolog.CallProlog("writeln('Need to define an action')");
-	        	 CxDynamicConsole.runDynamicConsole();
-	        }
-	    }
-		
-		String menu_id = menu_name+"_ID";
+		String menu_id = menu_name;
 		CxMenu menu = new CxMenu(menu_name, menu_id);
-		
-		menu.add(new About1());
-	    menuManager.add(menu);
-	    menusCreated.put(menu_id, menu);
-	    menuManager.update();
-	    ((WorkbenchWindow) window).updateActionBars();
+		if(!menuExists(menu_id)){
+			menuManager.add(menu);
+			menu.add(new CxAction("Empty Action","true"));
+			menusCreated.put(menu_id, menu);
 
-	    
-	    
+		}else{
+			MessageDialog.openError(
+					window.getShell(),
+					"AVISO",
+					"Impossível criar menu, já existe um menu com esse nome.");
+		}
+			menuManager.update();
+			((WorkbenchWindow) window).updateActionBars();
 	}
 	
 	
 	
 	public static void createMenu(String menu_name,String item_name, String action){
 		System.out.println("D-> Menu_Operations:createMenu with action String & item_name");
-		final String action_ = action;
-		final String item = item_name;
-		class About1 extends Action {
-	        public About1() {
-	            super(item, AS_PUSH_BUTTON);
-	        }
-	        public void run() {
-	        	Prolog.CallProlog(action_);
-	        	 CxDynamicConsole.runDynamicConsole();
-	        }
-	    }
+
+		String menu_id = menu_name;
 		
-	
-		String menu_id = menu_name+"_ID";
-		CxMenu menu = new CxMenu(menu_name, menu_id);
-		menu.add(new About1());
-	    menuManager.add(menu);
-	    menuManager.update();
-	    menusCreated.put(menu_id, menu);
+		if(!menuExists(menu_id)){
+			CxMenu menu = new CxMenu(menu_name, menu_id);
+			CxAction subMenu = new CxAction(item_name,action);
+			menu.add(subMenu);
+			menuManager.add(menu);
+			menu.addSubmenu(subMenu);
+			menuManager.update();
+			menusCreated.put(menu_id, menu);
+		}else{
+			CxAction subMenu = new CxAction(item_name,action);
+			menusCreated.get(menu_id).add(subMenu);
+			menusCreated.get(menu_id).addSubmenu(subMenu);
+			menuManager.update();
+		}
 	    ((WorkbenchWindow) window).updateActionBars();
 	    
 	}
 	
-	public static void c(String a, String[] vec){
-		System.out.println(a);
-		System.out.println(Arrays.toString(vec));
-		System.out.println(vec[0]);
-		System.out.println(vec[1]);
-		//System.out.println(vec[2]);
-		;
+	public static boolean menuExists(String menuName){
+		return menusCreated.containsKey(menuName);
 	}
 	
 	public static void createMenu(String menu_name,String[] actions){
 		System.out.println("D-> Menu_Operations:createMenu with action String & item_name");
 		
 		
-		CxMenu menu = new CxMenu(menu_name, menu_name+"_ID");
+		CxMenu menu = new CxMenu(menu_name, menu_name);
+		String menu_id = menu_name;
+
+		if(!menuExists(menu_id)){
+			menuManager.add(menu);
+			menusCreated.put(menu_id,menu);
+		}else{
+			menu=menusCreated.get(menu_id);
+		}
 		
-		for (int i=0; i<actions.length ; i+=2)
-			menu.add(createAction(actions[i],actions[i+1]));
-		
-		
-		String menu_id = menu_name+"_ID";
-	    menuManager.add(menu);
+		for (int i=0; i<actions.length ; i+=2){
+			CxAction cxAction = new CxAction(actions[i],actions[i+1]);
+			menu.add(cxAction);
+			menu.addSubmenu(cxAction);
+		}
 	    menuManager.update();
-	    menusCreated.put(menu_id,menu);
 	    ((WorkbenchWindow) window).updateActionBars();
 	    
 	}
@@ -158,33 +162,13 @@ public class Menu_Operations {
 		//O novo menu a ser adicionado
 		MenuManager menu = new MenuManager(menu_name, menu_name);
 		//A ação que define o comportamento do menu
-		Action prologAction = createAction(prolog_cmd, prolog_cmd);
+		Action prologAction = new CxAction(prolog_cmd, prolog_cmd);
 		//Adicionar a ação ao novo menu
 		menu.add(prologAction);
 		//O novo menu será sub-menu da barra principal de menus
 	    menuManager.add(menu);
 	    menuManager.update();
 	}
-	
-	private static Action createAction(String action_name, String action_cmd){
-		final String action_Name = action_name;
-		final String action_CMD = action_cmd;
-		class About1 extends Action {
-	        public About1() {
-	            super(action_Name, AS_PUSH_BUTTON);
-	        }
-	        public void run() {
-	        	Prolog.CallProlog(action_CMD);
-	        	 CxDynamicConsole.runDynamicConsole();
-	        }
-	    }
-		
-		return new About1();
-	}
-	
-	
-
-	
 	
 	
 	/**
@@ -197,7 +181,8 @@ public class Menu_Operations {
 	 */
 	public static void createSubMenu(MenuManager menuManager, String parentID, String subMenu_name, String subMenu_Id, Action action){
 		System.out.println("D-> Menu_Operations:createSubMenu with Action");
-		MenuManager parent = (MenuManager) menuManager.find(parentID);
+		//MenuManager parent = (MenuManager) menuManager.find(parentID);
+		CxMenu parent = menusCreated.get(parentID);
 		
 		CxMenu subMenu = new CxMenu(subMenu_name, subMenu_Id);
 		subMenu.add(action);
@@ -386,30 +371,6 @@ public class Menu_Operations {
 		        ((WorkbenchWindow) window).updateActionBars();
 	}
 	
-	public static void addContextMenuAction(){
-	}
 	
-	
-	
-	/*
-	static class Ch4_StatusAction extends Action
-	{
-	  StatusLineManager statman;
-	  short triggercount = 0;
-	  public Ch4_StatusAction(StatusLineManager sm) 
-	  {
-	    super("&Trigger@Ctrl+T", AS_PUSH_BUTTON);
-	    statman = sm;
-	    setToolTipText("Trigger the Action"); 
-	    //setImageDescriptor(ImageDescriptor.createFromFile
-	      //(this.getClass(),"eclipse.gif"));
-	  }
-	  public void run() 
-	  {
-	    triggercount++;
-	    statman.setMessage("The status action has fired. Count: " + 
-	      triggercount);
-	  }
-	}*/
 	
 }

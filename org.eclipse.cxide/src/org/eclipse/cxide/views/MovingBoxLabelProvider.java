@@ -9,6 +9,8 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 
+import thingsToSEE.FilesBundle;
+
 
 
 public class MovingBoxLabelProvider extends LabelProvider {	
@@ -32,13 +34,13 @@ public class MovingBoxLabelProvider extends LabelProvider {
 		Image img;
 		if (element instanceof PredNode) {
 			img = new Image(Display.getDefault(),
-					System.getProperty("user.dir")+"/icons/pred.png");
+					FilesBundle.getAbsFilePath("icons/pred.png"));
 		} else if (element instanceof AtomNode) {
 			img = new Image(Display.getDefault(),
-					System.getProperty("user.dir")+"/icons/javaOutlineGreenDot.png");
+					FilesBundle.getAbsFilePath("/icons/javaOutlineGreenDot.png"));
 		} else if (element instanceof UserElement) {
 			img = new Image(Display.getDefault(),
-					System.getProperty("user.dir")+"/icons/contentAssist/userDef.png");
+					FilesBundle.getAbsFilePath("/icons/contentAssist/userDef.png"));
 		} else {
 			throw unknownElement(element);
 		}

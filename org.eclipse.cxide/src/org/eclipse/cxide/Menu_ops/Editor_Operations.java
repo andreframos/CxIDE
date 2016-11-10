@@ -15,8 +15,8 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.cxide.Activator;
 import org.eclipse.cxide.CxEditor.CxEditor;
-import org.eclipse.cxide.console.CxDynamicConsole;
-import org.eclipse.cxide.console.CxNormalConsole;
+import org.eclipse.cxide.console.CxInternalConsole;
+import org.eclipse.cxide.console.CxExternalConsole;
 import org.eclipse.cxide.views.OutlineView;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.BadLocationException;
@@ -421,7 +421,7 @@ public class Editor_Operations {
 		i=0;
 		//Todo o conteudo do atual ficheiro em edição
 		//É necessário para conseguir obter as informações sobre os predicados
-		/*String content = getCurrentEditorContent();
+		String content = getCurrentEditorContent();
 		
 		//Processar informações sobre todos os predicados do ficheiro
 		//Esta informações permitirão atualizar o folding do editor e a vista estruturada
@@ -456,7 +456,7 @@ public class Editor_Operations {
 		System.out.println("-------------------------------------");
 		}
 		//Atualizar a nova outline view.
-		OutlineView.refresh();*/
+		OutlineView.refresh();
 	
 	}
 	
@@ -491,9 +491,9 @@ public class Editor_Operations {
 		String activeConsole = ConsolePlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage().findView("org.eclipse.ui.console.ConsoleView").getTitle();
 		String normal = "Console (CxProlog Console)";
 		if(activeConsole.equals(normal))
-			CxNormalConsole.injectCode(selected+"\r\n");
+			CxExternalConsole.injectCode(selected+"\r\n");
 		else
-			CxDynamicConsole.injectCode(selected+"\r\n");
+			CxInternalConsole.injectCode(selected+"\r\n");
 	}
 	
 }

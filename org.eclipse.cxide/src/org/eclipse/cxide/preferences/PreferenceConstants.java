@@ -6,8 +6,9 @@ import org.eclipse.swt.graphics.RGB;
  * Constant definitions for plug-in preferences
  */
 public class PreferenceConstants {
-
-	public static String CX_PATH = "/home/andreramos/z/cxprolog-0.98.2/cxprolog";
+	//"/home/andreramos/z/cxprolog-0.98.2/cxprolog";
+	// "/home/andreramos/z/cxprolog-0.97.5/cxprolog";
+	public static String CX_PATH = "/home/andreramos/z/cxprolog-0.97.5/cxprolog";
 
 	public static final String P_BOOLEAN = "booleanPreference";
 

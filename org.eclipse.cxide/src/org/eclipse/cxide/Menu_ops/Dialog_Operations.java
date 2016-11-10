@@ -1,5 +1,6 @@
 package org.eclipse.cxide.Menu_ops;
 
+import java.util.Arrays;
 import java.util.Hashtable;
 /**
  * Classe que é responsável por todas as operações realizadas com diálogos
@@ -26,8 +27,10 @@ public class Dialog_Operations {
 	public static void createDialog(String titulo){
 		System.out.println("D-> Dialog_Operations:createDialog");
 		CxDialog dialog = new CxDialog(titulo);
-		dialogs.put(titulo+"_ID",dialog);
+		dialogs.put(titulo,dialog);
 	}
+	
+	
 	
 	/**
 	 * Adiciona um novo campo de texto a um diálogo existente
@@ -36,7 +39,7 @@ public class Dialog_Operations {
 	 */
 	public static void addTextFiel_dialog(String titulo, String label_name){
 		System.out.println("D-> Dialog_Operations:add_Text_Field");
-		CxDialog dialog = dialogs.get(titulo+"_ID");
+		CxDialog dialog = dialogs.get(titulo);
 		dialog.addTextForm(label_name);
 	}
 	
@@ -47,8 +50,16 @@ public class Dialog_Operations {
 	 * @param label_name - O nome da etiqueta do novo dialogo
 	 */
 	public static void addNumTextFiel_dialog(String titulo, String label_name){
-		CxDialog dialog = dialogs.get(titulo+"_ID");
+		CxDialog dialog = dialogs.get(titulo);
 		dialog.addNumForm(label_name);
+	}
+	
+	public static void setOutput(String dialog_name, Object[] output){
+		System.out.println("Setting output");
+		CxDialog dialog = dialogs.get(dialog_name);
+		System.out.println("Setting output 2");
+		dialog.setOutput(output);
+		System.out.println("Output: "+Arrays.toString(output));
 	}
 	
 		/**
@@ -56,7 +67,7 @@ public class Dialog_Operations {
 		 * @param titulo - O titulo do dialogo a revelar
 		 */
 		public static void showDialog(String titulo){
-			CxDialog dialog = dialogs.get(titulo+"_ID");
+			CxDialog dialog = dialogs.get(titulo);
 			dialog.open();
 		}
 	
@@ -68,7 +79,7 @@ public class Dialog_Operations {
 	 * @return - O valor atual do campo textual do diálogo selecionado
 	 */
 	public static String dialog_getTextField(String dialog_title, String field){
-		CxDialog dialog = dialogs.get(dialog_title+"_ID");
+		CxDialog dialog = dialogs.get(dialog_title);
 		return dialog.getTextField(field);
 	}
 	
@@ -79,7 +90,7 @@ public class Dialog_Operations {
 	 * @return o valor atual do campo textual do diálogo selecionado
 	 */
 	public static String dialog_getNumField(String dialog_title, String field){
-		CxDialog dialog = dialogs.get(dialog_title+"_ID");
+		CxDialog dialog = dialogs.get(dialog_title);
 		return String.valueOf(dialog.getNumField(field));
 	}
 	
@@ -91,10 +102,10 @@ public class Dialog_Operations {
 	 */
 	public static void dialog_setAction(String dialog_title, String action_cmd){
 		System.out.println("D-> Dialog_Operations:dialog_setAction");
-		CxDialog dialog = dialogs.get(dialog_title+"_ID");
-		System.out.println("Dialog Id: "+dialog_title+"_ID");
+		CxDialog dialog = dialogs.get(dialog_title);
+		System.out.println("Dialog Id: "+dialog_title);
 		System.out.println("Action: "+action_cmd);
-		CxDialog.setAction(action_cmd);
+		dialog.setAction(dialog_title, action_cmd);
 	}
 	
 

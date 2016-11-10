@@ -1,14 +1,12 @@
 package org.eclipse.cxide.Menu_ops;
 
-import java.awt.Dimension;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
-import org.eclipse.cxide.console.CxDynamicConsole;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -17,7 +15,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Dialog;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -27,24 +24,26 @@ import org.eclipse.ui.internal.Workbench;
 import prolog.Prolog;
 
 public class CxDialog extends Dialog {
-	private String message;
-
+	private  boolean with_output=false;
+	private  String output="";
+	private String title;
 	private static IWorkbenchWindow window = Workbench.getInstance().getActiveWorkbenchWindow();
 	private static Shell shell = window.getShell();
-	
 	//campos para inserção de texto
 	private LinkedHashMap<String, String> forms;
 	//campos para inserção de númericos
 	private LinkedHashMap<String, Double> numForms;
 	//ação a executar
-	private static Action action = null;
+	private CxAction action = null;
 
 	
 	 //Cria um novo dialogo com um dado titulo
 	 //Com um estilo predefinido
 	public CxDialog(String title) {
-		this(shell, title, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
+		this(shell, title, SWT.SHELL_TRIM | SWT.APPLICATION_MODAL);
+		this.title=title;
 	}
+	
 
 	//Cria um novo dialogo com um dadi titulo e estilo
 	public CxDialog(Shell parent, String title, int style) {
@@ -59,37 +58,11 @@ public class CxDialog extends Dialog {
 		// Create the dialog window
 		Shell shell = new Shell(getParent(), getStyle());
 		shell.setText(getText());
-		 shell.setMinimumSize(230, 50);
 		createContents(shell);
 		shell.pack();
 		shell.open();
-		Display display = getParent().getDisplay();
-		while (!shell.isDisposed()) {
-			if (!display.readAndDispatch()) {
-				display.sleep();
-			}
-		}
+		
 	}
-
-	/**
-	 * Gets the message
-	 * 
-	 * @return String
-	 */
-	public String getMessage() {
-		return message;
-	}
-
-	/**
-	 * Sets the message
-	 * 
-	 * @param message
-	 *            the new message
-	 */
-	public void setMessage(String message) {
-		this.message = message;
-	}
-
 
 
 	/**
@@ -140,6 +113,24 @@ public class CxDialog extends Dialog {
 		System.out.println("D-> FormDialog:getNumField");
 		return numForms.get(label_name);
 	}
+	
+	public void withOutput(boolean output){
+		with_output=output;
+	}
+	
+	public void setOutput(Object[] cx_output){
+		with_output=true;
+		String aux ="";
+		
+		if(cx_output!=null){
+			int i=0;
+			while(i<cx_output.length){
+				aux+=cx_output[i].toString()+"\n";
+				i++;
+			}
+		}
+		output=Arrays.toString(cx_output);
+	}
 
 	/**
 	 * Creates a new form field with the given label_name
@@ -155,10 +146,9 @@ public class CxDialog extends Dialog {
 		// Show the message
 		Label label = new Label(shell, SWT.LEFT);
 		label.setText(label_name);
-
 		// Display the input box
-		final Text text = new Text(shell, SWT.BORDER);
-		text.setLayoutData(new GridData(SWT.LEFT, SWT.LEFT, true, false, 1, 1));
+		final  Text text = new Text(shell, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
+		   text.setLayoutData(new GridData(GridData.FILL_BOTH));
 		final String cheat = label_name;
 		
 		
@@ -201,6 +191,9 @@ public class CxDialog extends Dialog {
 		});*/
 
 	}
+	
+	
+	
 
 	/**
 	 * Creates the dialog's contents
@@ -214,7 +207,6 @@ public class CxDialog extends Dialog {
 		layout.marginLeft = 10;
 		layout.marginRight = 5;
 		shell.setLayout(layout);
-
 		Iterator<String> it = forms.keySet().iterator();
 		while (it.hasNext())
 			createForm(it.next(), shell);
@@ -222,23 +214,29 @@ public class CxDialog extends Dialog {
 		it = numForms.keySet().iterator();
 		while (it.hasNext())
 			createForm(it.next(), shell);
-
+		
+		
 		// Create the OK button and add a handler
 		// so that pressing it will set input
 		// to the entered value
 		Button ok = new Button(shell, SWT.PUSH);
 		ok.setText("OK");
-		GridData first_data = new GridData(GridData.FILL_VERTICAL);
+		GridData first_data = new GridData();
 		ok.setLayoutData(first_data);
 
 		ok.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
 				System.out.println("YOU CLICKED OK");
-				
-				
-				if (forms.size() != 0 || numForms.size()!=0)
-					if (action != null)
+				if (forms.size() != 0 || numForms.size()!=0){
+					if (action != null){
 						action.run();
+					}
+				}
+				if(with_output)
+					MessageDialog.openInformation(
+							window.getShell(),
+							"Dialog \""+title+ "\" output:",
+							output);
 				
 				shell.close();
 			}
@@ -248,7 +246,7 @@ public class CxDialog extends Dialog {
 		// so that pressing it will set input to null
 		Button cancel = new Button(shell, SWT.PUSH);
 		cancel.setText("Cancel");
-		first_data = new GridData(GridData.FILL_VERTICAL);
+		first_data = new GridData();
 		cancel.setLayoutData(first_data);
 		cancel.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
@@ -263,35 +261,17 @@ public class CxDialog extends Dialog {
 	}
 
 	/**
-	 * Defines the action of the form dialod
+	 * Defines the action of the form dialog
 	 * 
 	 * @param action_cmd
 	 *            - A String with the prolog predicates that define the action
 	 *            of the form dialog
 	 */
 
-	public static void setAction(String action_cmd) {
+	public void setAction( String dialog_title,String action_cmd) {
 		System.out.println("D-> FormDialog:setAction");
-		final String action_cmd_f = action_cmd;
-
-		class About1 extends Action {
-			public About1() {
-				super("About", AS_PUSH_BUTTON);
-			}
-
-			public void run() {
-				System.out.println("Action ON");
-				System.out.println("CMD: "+action_cmd_f);
-				//Prolog.CallProlog(action_cmd_f);
-				//Prolog.CallProlog("writeln('ok')");
-				Prolog.coroutiningInput("cxThread", action_cmd_f+".");
-				System.out.println(action_cmd_f);
-				CxDynamicConsole.runDynamicConsole();
-				System.out.println("Action OFF");
-			}
-		}
-
-		action = new About1();
-
+		action = new CxAction(dialog_title, action_cmd);
 	}
+	
+	
 }
